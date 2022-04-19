@@ -6,7 +6,9 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+//bringing routes
 const blogRoutes = require('./routes/blog')
+const authRoutes = require('./routes/auth')
 
 //app
 const app = express(); //loading express app features on app variable
@@ -23,6 +25,7 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+
 //cors----->It is also a middleware
 if (process.env.NODE_ENV === "development") {
   app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
@@ -30,6 +33,7 @@ if (process.env.NODE_ENV === "development") {
 
 //routes middleware
 app.use("/api",blogRoutes)
+app.use("/api",authRoutes)
 
 
 //port
