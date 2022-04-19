@@ -1,0 +1,30 @@
+{
+  "name": "SEO-Blogging-platform-NextJs-Backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Abhishek-015/SEO-Blogging-platform-NextJs-Backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Abhishek-015/SEO-Blogging-platform-NextJs-Backend/issues"
+  },
+  "homepage": "https://github.com/Abhishek-015/SEO-Blogging-platform-NextJs-Backend#readme",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "mongoose": "^6.3.0",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.15"
+  }
+}
