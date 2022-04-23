@@ -64,6 +64,7 @@ const userSchema = new mongoose.Schema(
 //virtual field---> It is something like when we get password from client ,we are going to save hashed password in out database , so anything like virtual field
 //doesnot persist in database , it is persist only here ,where we are defing it
 
+//virtual field
 userSchema
   .virtual("password")
   .set(function (password) {
@@ -76,9 +77,34 @@ userSchema
     //encrypt password
     this.hashed_password = this.encryptPassword(password);
   })
-  .get(function(){
-    return this._password
+  .get(function () {
+    return this._password;
   });
 
+//creating methods
+userSchema.methods = {
+  //authenticate method---> to compare password,whenever we get the plain password from the client we encrypt that plain password and compaare it with
+  // hashed password stored in our data base ,if they match then we can authenticate succefully the uses during sisgin in process
+
+  authenticate: function (plainPassword) {
+    return this.encryptPassword(plainPassword) === this.hashed_password;
+  },
+
+  encryptPassword: function (password) {
+    if (!password) return "";
+    try {
+      //encrypt password method
+      return crypto
+        .createHmac("sha1", this.salt)
+        .update(password)
+        .digest("hex");
+    } catch (err) {
+      return "";
+    }
+  },
+  makeSalt: function () {
+    return Math.round(new Date().valueOf() * Math.random()) + ""; //give us random numeric value
+  },
+};
 
 module.exports = mongoose.model("User", userSchema);
