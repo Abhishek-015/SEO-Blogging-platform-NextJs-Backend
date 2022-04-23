@@ -18,12 +18,6 @@ const userSchema = new mongoose.Schema(
       required: true,
       max: 32,
     },
-    name: {
-      type: String,
-      trim: true,
-      required: true,
-      max: 32,
-    },
     email: {
       type: String,
       trim: true,
@@ -50,12 +44,12 @@ const userSchema = new mongoose.Schema(
     },
     photo: {
       data: Buffer, // we are going to save photo in binary data format and mongodb is perfect for saving binary data
-      contentType: String, // photo can ibe in form of image.jpeg,image.png.......
+      contentType: String, // photo can be in form of image.jpeg,image.png.......
     },
     //we will implement the forgot password and reset password functionality
     //at that we will generate the token and save it in the database and then we will email that token to the user, when the
     // user click on the link they will be redirected to react application and then from there react application will send the token back to
-    //our server and then we check if that token is exactly one that we have in the data base
+    //our server and then we check if that token is exactly one that we have in the database
     resetPasswordLink: {
       data: String,
       default: "",
@@ -66,4 +60,25 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model('User',userSchema)
+//we can even add methods and other functionality to our model schema like virtual field
+//virtual field---> It is something like when we get password from client ,we are going to save hashed password in out database , so anything like virtual field
+//doesnot persist in database , it is persist only here ,where we are defing it
+
+userSchema
+  .virtual("password")
+  .set(function (password) {
+    //create a temporary variable called _password
+    this._password = password;
+
+    //genearate salt that helps in hashing algo
+    this.salt = this.makeSalt();
+
+    //encrypt password
+    this.hashed_password = this.encryptPassword(password);
+  })
+  .get(function(){
+    return this._password
+  });
+
+
+module.exports = mongoose.model("User", userSchema);
