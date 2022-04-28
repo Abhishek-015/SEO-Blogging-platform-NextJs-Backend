@@ -3,9 +3,11 @@ const shortId = require("shortid");
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
 
+
+
 exports.signup = (req, res) => {
   // checking if user already exist
-  User.findOne({ emal: req.body.email }).exec((err, user) => {
+  User.findOne({ email: req.body.email }).exec((err, user) => {
     if (user) {
       return res.status(400).json({
         error: "Email is already taken",
@@ -19,15 +21,15 @@ exports.signup = (req, res) => {
 
     //creating new User
     let newUser = new User({ name, email, password, profile, username });
-    console.log("newUser---->", newUser);
     newUser.save((err, success) => {
-      if (err)
+      if (err) {
         return res.status(400).json({
           error: err,
         });
+      }
       res.json({
         //   user:success
-        message: "SignUp Success! Please signIn",
+        message: "Signup success! Please signin",
       });
     });
   });
@@ -67,18 +69,51 @@ exports.signin = (req, res) => {
   });
 };
 
-exports.signout = (req,res) => {
-  res.clearCookie('token');
+exports.signout = (req, res) => {
+  res.clearCookie("token");
   res.json({
-    message:"Signout successfully"
-  })
-}
+    message: "Signout successfully",
+  });
+};
 
 //creating a middleware ---> To protected the routes
 //when user id logged in and it refresh that url ,then at that time this middleware check the secret coming from client side
 // and compare it with secret stored in our env file,if this matches and the token doesnot expired then this middleware return true and user will have excess to it
+//This middleware not only just check the expiry of token but also makes make user available in req object by default
 
 exports.requireSignin = expressJwt({
-  secret : process.env.JWT_SECRET,
-  algorithms: ['HS256']
-})
+  secret: process.env.JWT_SECRET,
+  algorithms: ["HS256"],
+});
+
+exports.authMiddleWare = (req, res, next) => {
+  const authUserId = req.user._id;
+  User.findById({ _id: authUserId }).exec((err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User not found",
+      });
+    }
+    req.profile = user;
+    next();
+  });
+};
+
+exports.adminMiddleWare = (req, res, next) => {
+  const adminUserId = req.user._id;
+  User.findById({ _id: adminUserId }).exec((err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User not found",
+      });
+    }
+    if(user.role !== 1){
+      return res.status(400).json({
+        error: "Admin resource. Access denied",
+      });
+    }
+    req.profile = user;
+    next();
+  });
+};
+

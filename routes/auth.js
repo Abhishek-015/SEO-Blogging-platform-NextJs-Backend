@@ -2,7 +2,12 @@ const express = require("express");
 const router = express.Router();
 
 //controllers
-const { signup, signin, signout,requireSignin } = require("../controllers/auth.js");
+const {
+  signup,
+  signin,
+  signout,
+  requireSignin,
+} = require("../controllers/auth.js");
 
 //validators
 const { runValidation } = require("../validators");
@@ -15,10 +20,10 @@ router.post("/signup", userSignupValidator, runValidation, signup);
 router.post("/signin", userSigninValidator, runValidation, signin);
 router.get("/signout", signout);
 //test
-router.get("/secret",requireSignin, (req, res) => {
+router.get("/secret", requireSignin, (req, res) => {
   try {
     res.json({
-      message: "seceret page is accessible",
+      message: req.user,
     });
   } catch (err) {
     res.json({
