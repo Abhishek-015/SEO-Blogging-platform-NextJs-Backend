@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { create } = require("../controllers/category");
+const { create, list, read, remove } = require("../controllers/category");
 
 //validators
 const { runValidation } = require("../validators");
@@ -17,5 +17,12 @@ router.post(
   adminMiddleWare,
   create
 );
+
+router.get("/categories", list);
+
+// we are not using id for single category search because id is not SEO
+router.get("/category/:slug", read);
+
+router.delete("/category/:slug", requireSignin, adminMiddleWare, remove);
 
 module.exports = router;
